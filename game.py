@@ -9,6 +9,7 @@ HINT_FONT = pg.font.SysFont("consolas", 25)
 WIN = variables.WIN
 WIN_SIZE = variables.WIN_SIZE
 GRID_SIZE = variables.GRID_SIZE
+MINES_AMOUNT = variables.MINES_AMOUNT
 SIDE_SIZE = variables.SIDE_SIZE
 GAME_END = False
 
@@ -170,7 +171,7 @@ class MineField:
 
 
 def game():
-    field = MineField(10, 10, WIN_SIZE[1])
+    field = MineField(GRID_SIZE, MINES_AMOUNT, WIN_SIZE[1])
     while True:
         mouse_pos = pg.mouse.get_pos()
 
