@@ -80,6 +80,5 @@ def menu():
         pg.display.update()
 
 
-input()
 # launch menu
 menu()
