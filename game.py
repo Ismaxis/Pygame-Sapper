@@ -54,7 +54,7 @@ class Cage:
                 hint_label, (rect[0] + (self.side_size - hint_label.get_width())/2, rect[1] + (self.side_size - hint_label.get_height())/2))
 
 
-class MineField:
+class Mine_field:
     def __init__(self, grid_size, mines_amount, section_size):
         self.field = []  # array of
         self.grid_size = grid_size
@@ -170,8 +170,8 @@ class MineField:
             GAME_END = True
 
 
-def game():
-    field = MineField(GRID_SIZE, MINES_AMOUNT, WIN_SIZE[1])
+def sapper_game():
+    field = Mine_field(GRID_SIZE, MINES_AMOUNT, WIN_SIZE[1])
     while True:
         mouse_pos = pg.mouse.get_pos()
 
