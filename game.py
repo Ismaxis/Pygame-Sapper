@@ -11,23 +11,21 @@ WIN_SIZE = variables.WIN_SIZE
 GRID_SIZE = variables.GRID_SIZE
 MINES_AMOUNT = variables.MINES_AMOUNT
 SIDE_SIZE = variables.SIDE_SIZE
-GAME_END = False
 
 
 class Cage:
     flag = variables.flag
 
-    def __init__(self, pos, side_size):
+    def __init__(self, pos):
         self.pos = pos
-        self.side_size = side_size
         self.is_mine = False
         self.hint = 0
         self.opened = False
         self.defused = False
 
     def draw(self):
-        rect = (self.side_size * self.pos[0],
-                self.side_size * self.pos[1], self.side_size, self.side_size)
+        rect = (SIDE_SIZE * self.pos[0],
+                SIDE_SIZE * self.pos[1], SIDE_SIZE, SIDE_SIZE)
 
         # defusion
         if self.defused:
@@ -51,55 +49,52 @@ class Cage:
             hint_label = HINT_FONT.render(
                 f'{self.hint}', True, (255, 255, 255))
             WIN.blit(
-                hint_label, (rect[0] + (self.side_size - hint_label.get_width())/2, rect[1] + (self.side_size - hint_label.get_height())/2))
+                hint_label, (rect[0] + (SIDE_SIZE - hint_label.get_width())/2, rect[1] + (SIDE_SIZE - hint_label.get_height())/2))
 
 
 class Mine_field:
-    def __init__(self, grid_size, mines_amount, section_size):
+    def __init__(self, mines_amount):
         self.field = []  # array of
-        self.grid_size = grid_size
-        self.side_size = section_size / self.grid_size
-        self.mines_amount = mines_amount
         self.defuse_amount = 0
 
         # generate grid
-        for i in range(grid_size):
+        for i in range(GRID_SIZE):
             self.field.append([])
-            for j in range(grid_size):
-                self.field[i].append(Cage((i, j), self.side_size))
+            for j in range(GRID_SIZE):
+                self.field[i].append(Cage((i, j), SIDE_SIZE))
 
         # placing mines
         for _ in range(mines_amount):
             while True:
-                x = random.randint(0, grid_size - 1)
-                y = random.randint(0, grid_size - 1)
+                x = random.randint(0, GRID_SIZE - 1)
+                y = random.randint(0, GRID_SIZE - 1)
                 if self.field[x][y].is_mine == False:
                     self.field[x][y].is_mine = True
                     for i in range(-1, 2):
                         for j in range(-1, 2):
-                            if 0 <= x + i < grid_size and 0 <= y + j < grid_size and (i != 0 or j != 0):
+                            if 0 <= x + i < GRID_SIZE and 0 <= y + j < GRID_SIZE and (i != 0 or j != 0):
                                 self.field[x + i][y + j].hint += 1
                     break
                 else:
                     continue
-        print()
 
-    def draw(self, section_size):
+    def draw(self):
         # draw rects
         for line in self.field:
             for cage in line:
                 cage.draw()
 
         # draw lines
-        for i in range(self.grid_size):
+        for i in range(GRID_SIZE):
             pg.draw.line(WIN, (255, 255, 255),
-                         (0, i * self.side_size), (section_size, i * self.side_size), 3)
+                         (0, i * SIDE_SIZE), (WIN_SIZE[1], i * SIDE_SIZE), 3)
             pg.draw.line(WIN, (255, 255, 255),
-                         (i * self.side_size, 0), (i * self.side_size, section_size), 3)
+                         (i * SIDE_SIZE, 0), (i * SIDE_SIZE, WIN_SIZE[1]), 3)
+
+    def update(self, x, y, button):
+        pass
 
     def open(self, mouse_pos):
-        x = int(mouse_pos[0]//self.side_size)
-        y = int(mouse_pos[1]//self.side_size)
 
         if not self.field[x][y].opened and not self.field[x][y].defused and self.field[x][y].hint == 0:
             fill(self, self.field[x][y])
@@ -108,8 +103,8 @@ class Mine_field:
             self.field[x][y].opened = True
 
     def defuse(self, mouse_pos):
-        x = int(mouse_pos[0]//self.side_size)
-        y = int(mouse_pos[1]//self.side_size)
+        x = int(mouse_pos[0]//SIDE_SIZE)
+        y = int(mouse_pos[1]//SIDE_SIZE)
 
         if not self.field[x][y].defused:
             self.defuse_amount += 1
@@ -125,10 +120,8 @@ class Mine_field:
             self.field[x][y].defused = False
 
     def defeat_check(self, mouse_pos, field):
-        global GAME_END
-
-        x = int(mouse_pos[0]//self.side_size)
-        y = int(mouse_pos[1]//self.side_size)
+        x = int(mouse_pos[0]//SIDE_SIZE)
+        y = int(mouse_pos[1]//SIDE_SIZE)
 
         if self.field[x][y].is_mine and not self.field[x][y].defused:
             victory_label = pg.font.SysFont(
@@ -143,11 +136,8 @@ class Mine_field:
                                      (WIN_SIZE[1] - victory_label.get_height())/2))
 
             pg.display.update()
-            GAME_END = True
 
     def victory_check(self, field):
-        global GAME_END
-
         victory = True
         for line in field.field:
             for cage in line:
@@ -162,44 +152,8 @@ class Mine_field:
                 for cage in line:
                     cage.opened = True
 
-            field.draw(WIN_SIZE[1])
+            field.draw()
             WIN.blit(victory_label, ((WIN_SIZE[0] - victory_label.get_width())/2,
                                      (WIN_SIZE[1] - victory_label.get_height())/2))
 
             pg.display.update()
-            GAME_END = True
-
-
-def sapper_game():
-    field = Mine_field(GRID_SIZE, MINES_AMOUNT, WIN_SIZE[1])
-    while True:
-        mouse_pos = pg.mouse.get_pos()
-
-        for event in pg.event.get():
-
-            if event.type == pg.QUIT:
-                pg.quit()
-                quit()
-
-            elif event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
-
-                if mouse_pos[0] < WIN_SIZE[1]:
-                    field.open(mouse_pos)
-                    field.defeat_check(mouse_pos, field)
-
-            elif event.type == pg.MOUSEBUTTONDOWN and event.button == 3:
-
-                if mouse_pos[0] < WIN_SIZE[1]:
-                    field.defuse(mouse_pos)
-
-        field.victory_check(field)
-
-        if GAME_END:
-            while True:
-                for event in pg.event.get():
-                    if event.type == pg.QUIT:
-                        pg.quit()
-                        quit()
-
-        field.draw(WIN_SIZE[1])
-        pg.display.update()
