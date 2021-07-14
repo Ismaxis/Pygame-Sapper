@@ -5,6 +5,7 @@ import menu
 import view
 import variables
 
+WIN = variables.WIN
 WIN_SIZE = variables.WIN_SIZE
 GRID_SIZE = variables.GRID_SIZE
 MINES_AMOUNT = variables.MINES_AMOUNT
@@ -42,9 +43,12 @@ while not start:
     menu_view.update(start_menu)
     mouse_pressed = False
 
+del start_menu
+del menu_view
+
 # Game
-field = game.Mine_field(GRID_SIZE, MINES_AMOUNT, WIN_SIZE[1])
-game_end = False
+sapper_game = game.Game(MINES_AMOUNT)
+game_view = view.Field_view()
 while True:
     for event in pg.event.get():
         if event.type == pg.QUIT:
@@ -57,23 +61,26 @@ while True:
                 x = int(mouse_pos[0]//SIDE_SIZE)
                 y = int(mouse_pos[1]//SIDE_SIZE)
 
-                field.update(x, y, event.button)
-                field.defeat_check(mouse_pos, field)
+                sapper_game.update(x, y, event.button)
 
             elif event.type == pg.MOUSEBUTTONDOWN and event.button == 3:
                 x = int(mouse_pos[0]//SIDE_SIZE)
                 y = int(mouse_pos[1]//SIDE_SIZE)
 
-                field.update(x, y, event.button)
+                sapper_game.update(x, y, event.button)
 
-    field.victory_check(field)
+    if sapper_game.result != 0:
+        game_view.update(sapper_game.mine_field)
+        WIN.blit(sapper_game.victory_label, ((WIN_SIZE[0] - sapper_game.victory_label.get_width())/2,
+                                             (WIN_SIZE[1] - sapper_game.victory_label.get_height())/2))
 
-    if game_end:
+        pg.display.update()
+
         while True:
             for event in pg.event.get():
                 if event.type == pg.QUIT:
                     pg.quit()
                     quit()
 
-    field.draw(WIN_SIZE[1])
+    game_view.update(sapper_game.mine_field)
     pg.display.update()

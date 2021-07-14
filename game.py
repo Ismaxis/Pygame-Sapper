@@ -5,7 +5,6 @@ from fill import fill
 pg.font.init()
 
 
-HINT_FONT = pg.font.SysFont("consolas", 25)
 WIN = variables.WIN
 WIN_SIZE = variables.WIN_SIZE
 GRID_SIZE = variables.GRID_SIZE
@@ -15,6 +14,11 @@ SIDE_SIZE = variables.SIDE_SIZE
 
 class Cage:
     flag = variables.flag
+    hint_font = pg.font.SysFont("consolas", 25)
+
+    close_color = (128, 128, 128)
+    open_color = (200, 200, 200)
+    mine_color = (255, 50, 50)
 
     def __init__(self, pos):
         self.pos = pos
@@ -22,34 +26,19 @@ class Cage:
         self.hint = 0
         self.opened = False
         self.defused = False
+        self.rect = (SIDE_SIZE * self.pos[0],
+                     SIDE_SIZE * self.pos[1], SIDE_SIZE, SIDE_SIZE)
+        self.color = self.close_color
 
-    def draw(self):
-        rect = (SIDE_SIZE * self.pos[0],
-                SIDE_SIZE * self.pos[1], SIDE_SIZE, SIDE_SIZE)
+    def update(self, open, defuse):
+        self.opened = open
+        self.defused = defuse
 
-        # defusion
-        if self.defused:
-            if self.opened and self.is_mine:
-                color = (200, 50, 50)
-                pg.draw.rect(WIN, color, rect)
-            WIN.blit(self.flag, (rect[0], rect[1]))
-            return
+        if open and not self.is_mine:
+            self.color = self.mine_color
 
-        # color definition
-        color = (128, 128, 128)
-        if self.is_mine and self.opened:
-            color = (255, 50, 50)
-        if self.opened and not self.is_mine:
-            color = (200, 200, 200)
-
-        pg.draw.rect(WIN, color, rect)
-
-        # hint
-        if self.opened and not self.is_mine:
-            hint_label = HINT_FONT.render(
-                f'{self.hint}', True, (255, 255, 255))
-            WIN.blit(
-                hint_label, (rect[0] + (SIDE_SIZE - hint_label.get_width())/2, rect[1] + (SIDE_SIZE - hint_label.get_height())/2))
+        elif open:
+            self.color = self.open_color
 
 
 class Mine_field:
@@ -61,7 +50,7 @@ class Mine_field:
         for i in range(GRID_SIZE):
             self.field.append([])
             for j in range(GRID_SIZE):
-                self.field[i].append(Cage((i, j), SIDE_SIZE))
+                self.field[i].append(Cage((i, j)))
 
         # placing mines
         for _ in range(mines_amount):
@@ -78,82 +67,64 @@ class Mine_field:
                 else:
                     continue
 
-    def draw(self):
-        # draw rects
-        for line in self.field:
-            for cage in line:
-                cage.draw()
+    def update(self, x, y, button):
+        if button == 1:
+            if not self.field[x][y].opened and not self.field[x][y].defused and self.field[x][y].hint == 0:
+                fill(self, self.field[x][y])
 
-        # draw lines
-        for i in range(GRID_SIZE):
-            pg.draw.line(WIN, (255, 255, 255),
-                         (0, i * SIDE_SIZE), (WIN_SIZE[1], i * SIDE_SIZE), 3)
-            pg.draw.line(WIN, (255, 255, 255),
-                         (i * SIDE_SIZE, 0), (i * SIDE_SIZE, WIN_SIZE[1]), 3)
+            elif not self.field[x][y].defused:
+                self.field[x][y].update(True, False)
+
+        elif button == 3:
+            if not self.field[x][y].defused:
+                self.defuse_amount += 1
+
+                if self.defuse_amount <= MINES_AMOUNT and not self.field[x][y].opened:
+                    self.field[x][y].update(False, True)
+                else:
+                    self.defuse_amount -= 1
+                    # place for message what amount of defusions is maximum
+
+            elif self.field[x][y].defused:
+                self.defuse_amount -= 1
+                self.field[x][y].update(False, False)
+
+
+class Game:
+    def __init__(self, mines_amount):
+        self.mine_field = Mine_field(mines_amount)
+        self.result = 0
+        self.victory_label = None
 
     def update(self, x, y, button):
-        pass
+        self.mine_field.update(x, y, button)
+        if button == 1:
+            self.defeat_check(x, y)
+        elif button == 3:
+            self.victory_check()
 
-    def open(self, mouse_pos):
+    def defeat_check(self, x, y):
+        if self.mine_field.field[x][y].is_mine and not self.mine_field.field[x][y].defused:
+            self.result = -1
 
-        if not self.field[x][y].opened and not self.field[x][y].defused and self.field[x][y].hint == 0:
-            fill(self, self.field[x][y])
-
-        elif not self.field[x][y].defused:
-            self.field[x][y].opened = True
-
-    def defuse(self, mouse_pos):
-        x = int(mouse_pos[0]//SIDE_SIZE)
-        y = int(mouse_pos[1]//SIDE_SIZE)
-
-        if not self.field[x][y].defused:
-            self.defuse_amount += 1
-
-            if self.defuse_amount <= self.mines_amount and not self.field[x][y].opened:
-                self.field[x][y].defused = True
-            else:
-                self.defuse_amount -= 1
-                # place for message what amount of defusions is maximum
-
-        elif self.field[x][y].defused:
-            self.defuse_amount -= 1
-            self.field[x][y].defused = False
-
-    def defeat_check(self, mouse_pos, field):
-        x = int(mouse_pos[0]//SIDE_SIZE)
-        y = int(mouse_pos[1]//SIDE_SIZE)
-
-        if self.field[x][y].is_mine and not self.field[x][y].defused:
-            victory_label = pg.font.SysFont(
+            self.victory_label = pg.font.SysFont(
                 "consolas", 200).render("Defeat!", True, (255, 40, 80))
 
-            for line in field.field:
+            for line in self.mine_field.field:
                 for cage in line:
                     cage.opened = True
 
-            field.draw(WIN_SIZE[1])
-            WIN.blit(victory_label, ((WIN_SIZE[0] - victory_label.get_width())/2,
-                                     (WIN_SIZE[1] - victory_label.get_height())/2))
-
-            pg.display.update()
-
-    def victory_check(self, field):
-        victory = True
-        for line in field.field:
+    def victory_check(self):
+        for line in self.mine_field.field:
             for cage in line:
                 if cage.is_mine and not cage.defused:
-                    victory = False
+                    return
 
-        if victory:
-            victory_label = pg.font.SysFont(
-                "consolas", 200).render("Win!", True, (40, 255, 80))
+        self.result = 1
 
-            for line in field.field:
-                for cage in line:
-                    cage.opened = True
+        self.victory_label = pg.font.SysFont(
+            "consolas", 200).render("Win!", True, (40, 255, 80))
 
-            field.draw()
-            WIN.blit(victory_label, ((WIN_SIZE[0] - victory_label.get_width())/2,
-                                     (WIN_SIZE[1] - victory_label.get_height())/2))
-
-            pg.display.update()
+        for line in self.mine_field.field:
+            for cage in line:
+                cage.opened = True
