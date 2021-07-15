@@ -1,8 +1,4 @@
-import variables
 import pygame as pg
-
-WIN_SIZE = variables.WIN_SIZE
-WIN = variables.WIN
 
 
 class Button:
@@ -32,36 +28,40 @@ class Banner:
 
 
 class Start_menu:
-    banner_pos = (WIN_SIZE[0]/2, WIN_SIZE[1]/14)
-    banner_color = (255, 255, 255)
-    banner_text = "Sapper game"
+    def __init__(self, win_size):
+        banner_pos = (win_size[0]/2, win_size[1]/14)
+        banner_color = (255, 255, 255)
+        banner_text = "Sapper game"
 
-    # Start button
-    button_pos = (WIN_SIZE[0]/2, WIN_SIZE[1]/2)
-    button_status = False
-    button_size = (250, 100)
-    button_text = "Press to start"
-    button_color = ((255, 255, 255), (128, 128, 128))
+        # Start button
+        button_pos = (win_size[0]/2, win_size[1]/2)
+        button_size = (250, 100)
+        button_text = "Press to start"
+        button_color = ((255, 255, 255), (128, 128, 128))
 
-    # Difficult buttons
-    dif_size = (200, 100)
-    low_dif_color = ((50, 255, 50), (200, 255, 200))
-    med_dif_color = ((50, 50, 255), (200, 200, 255))
-    high_dif_color = ((255, 50, 50), (255, 200, 200))
-    gap = 10
+        # Difficult buttons
+        dif_size = (200, 100)
+        low_dif_color = ((50, 255, 50), (200, 255, 200))
+        med_dif_color = ((50, 50, 255), (200, 200, 255))
+        high_dif_color = ((255, 50, 50), (255, 200, 200))
+        gap = win_size[0]/100
 
-    low_dif_pos = (WIN_SIZE[0]/2 - dif_size[0] - gap, WIN_SIZE[1] * 11/14)
-    med_dif_pos = (WIN_SIZE[0]/2,  WIN_SIZE[1] * 11/14)
-    high_dif_pos = (WIN_SIZE[0]/2 + dif_size[0] + gap, WIN_SIZE[1] * 11/14)
+        low_dif_pos = (win_size[0]/2 - dif_size[0] - gap, win_size[1] * 11/14)
+        med_dif_pos = (win_size[0]/2,  win_size[1] * 11/14)
+        high_dif_pos = (win_size[0]/2 + dif_size[0] + gap, win_size[1] * 11/14)
 
-    # Components
-    name_banner = Banner(banner_pos, banner_text, banner_color)
+        # Components
+        self.name_banner = Banner(banner_pos, banner_text, banner_color)
 
-    start_button = Button(button_pos, button_size, button_text, button_color)
+        self.start_button = Button(button_pos, button_size,
+                                   button_text, button_color)
 
-    low_dif_button = Button(low_dif_pos, dif_size, "Easy", low_dif_color)
-    med_dif_button = Button(med_dif_pos, dif_size, "Medium", med_dif_color)
-    high_dif_button = Button(high_dif_pos, dif_size, "Hard", high_dif_color)
+        self.low_dif_button = Button(
+            low_dif_pos, dif_size, "Easy", low_dif_color)
+        self.med_dif_button = Button(
+            med_dif_pos, dif_size, "Medium", med_dif_color)
+        self.high_dif_button = Button(
+            high_dif_pos, dif_size, "Hard", high_dif_color)
 
     def change_status(self, button, status):
         button.status = status

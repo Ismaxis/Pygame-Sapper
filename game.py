@@ -1,13 +1,8 @@
 import pygame as pg
 import os
 import random
-import variables
 from fill import fill
 pg.font.init()
-
-
-WIN = variables.WIN
-WIN_SIZE = variables.WIN_SIZE
 
 
 class Cage:
@@ -96,14 +91,14 @@ class Mine_field:
 
 
 class Game:
-    def __init__(self, difficult):
+    def __init__(self, difficult, win_size):
         mines_amount = difficult * 10
 
         if difficult == 1:
             self.grid_size = 10
         else:
             self.grid_size = 20
-        self.side_size = int(WIN_SIZE[1]/self.grid_size)
+        self.side_size = int(win_size[1]/self.grid_size)
 
         self.mine_field = Mine_field(
             mines_amount, self.grid_size, self.side_size)

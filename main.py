@@ -3,10 +3,11 @@ import pygame as pg
 import game
 import menu
 import view
-import variables
 
-WIN = variables.WIN
-WIN_SIZE = variables.WIN_SIZE
+
+WIN_SIZE = (800, 800)
+WIN = pg.display.set_mode(WIN_SIZE)
+pg.display.set_caption("Sapper")
 
 
 def check_buttons(buttons, mouse_pos):
@@ -18,7 +19,7 @@ def check_buttons(buttons, mouse_pos):
     return -1
 
 
-start_menu = menu.Start_menu()
+start_menu = menu.Start_menu(WIN_SIZE)
 menu_view = view.Menu_view()
 
 # Start menu
@@ -50,14 +51,14 @@ while not start:
             start_menu.select(buttons[i + 1])
             difficut = i + 1
 
-    menu_view.update(start_menu)
+    menu_view.update(WIN, start_menu)
     mouse_pressed = False
 
 del start_menu
 del menu_view
 
 # Game
-sapper_game = game.Game(difficut)
+sapper_game = game.Game(difficut, WIN_SIZE)
 game_view = view.Field_view()
 while True:
     for event in pg.event.get():
@@ -80,7 +81,7 @@ while True:
                 sapper_game.update(x, y, event.button)
 
     if sapper_game.result != 0:
-        game_view.update(sapper_game.mine_field)
+        game_view.update(WIN, WIN_SIZE, sapper_game.mine_field)
         WIN.blit(sapper_game.victory_label, ((WIN_SIZE[0] - sapper_game.victory_label.get_width())/2,
                                              (WIN_SIZE[1] - sapper_game.victory_label.get_height())/2))
 
@@ -92,5 +93,5 @@ while True:
                     pg.quit()
                     quit()
 
-    game_view.update(sapper_game.mine_field)
+    game_view.update(WIN, WIN_SIZE, sapper_game.mine_field)
     pg.display.update()
