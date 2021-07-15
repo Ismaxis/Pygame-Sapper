@@ -37,13 +37,13 @@ class Start_menu:
         button_pos = (win_size[0]/2, win_size[1]/2)
         button_size = (250, 100)
         button_text = "Press to start"
-        button_color = ((255, 255, 255), (128, 128, 128))
+        button_color = ((200, 200, 200), (255, 255, 255))
 
         # Difficult buttons
         dif_size = (200, 100)
-        low_dif_color = ((50, 255, 50), (200, 255, 200))
-        med_dif_color = ((50, 50, 255), (200, 200, 255))
-        high_dif_color = ((255, 50, 50), (255, 200, 200))
+        low_dif_color = ((50, 255, 50), (150, 255, 150))
+        med_dif_color = ((50, 50, 255), (150, 150, 255))
+        high_dif_color = ((255, 50, 50), (255, 150, 150))
         gap = win_size[0]/100
 
         low_dif_pos = (win_size[0]/2 - dif_size[0] - gap, win_size[1] * 11/14)

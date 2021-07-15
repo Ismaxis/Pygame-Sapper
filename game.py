@@ -67,6 +67,14 @@ class Mine_field:
                 else:
                     continue
 
+        while True:
+            x = random.randint(0, grid_size - 1)
+            y = random.randint(0, grid_size - 1)
+
+            if self.field[x][y].hint == 0 and not self.field[x][y].is_mine:
+                fill(self, self.field[x][y])
+                break
+
     def update(self, x, y, button):
         if button == 1:
             if not self.field[x][y].opened and not self.field[x][y].defused and self.field[x][y].hint == 0:
@@ -92,12 +100,12 @@ class Mine_field:
 
 class Game:
     def __init__(self, difficult, win_size):
-        mines_amount = difficult * 10
+        mines_amount = difficult * 5
 
         if difficult == 1:
-            self.grid_size = 10
+            self.grid_size = 7
         else:
-            self.grid_size = 20
+            self.grid_size = 10
         self.side_size = int(win_size[1]/self.grid_size)
 
         self.mine_field = Mine_field(
