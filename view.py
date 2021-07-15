@@ -4,14 +4,17 @@ import variables
 
 WIN = variables.WIN
 WIN_SIZE = variables.WIN_SIZE
-GRID_SIZE = variables.GRID_SIZE
-SIDE_SIZE = variables.SIDE_SIZE
 
 
 class Menu_view:
     def update(self, menu):
         self.draw_banner(menu.name_banner)
         self.draw_button(menu.start_button)
+
+        # Difficults buttons
+        self.draw_button(menu.low_dif_button)
+        self.draw_button(menu.med_dif_button)
+        self.draw_button(menu.high_dif_button)
 
         pg.display.update()
 
@@ -21,7 +24,10 @@ class Menu_view:
 
     @staticmethod
     def draw_button(button):
-        pg.draw.rect(WIN, button.color[button.status], button.rect)
+        if button.selected:
+            pg.draw.rect(WIN, button.color[1], button.rect)
+        else:
+            pg.draw.rect(WIN, button.color[button.status], button.rect)
         WIN.blit(button.label, button.label_pos)
 
 
@@ -33,11 +39,11 @@ class Field_view:
                 self.draw_cage(cage)
 
         # draw lines
-        for i in range(GRID_SIZE):
+        for i in range(field.grid_size):
             pg.draw.line(WIN, (255, 255, 255),
-                         (0, i * SIDE_SIZE), (WIN_SIZE[1], i * SIDE_SIZE), 3)
+                         (0, i * field.side_size), (WIN_SIZE[1], i * field.side_size), 3)
             pg.draw.line(WIN, (255, 255, 255),
-                         (i * SIDE_SIZE, 0), (i * SIDE_SIZE, WIN_SIZE[1]), 3)
+                         (i * field.side_size, 0), (i * field.side_size, WIN_SIZE[1]), 3)
 
         pg.display.update()
 
@@ -65,4 +71,4 @@ class Field_view:
             hint_label = cage.hint_font.render(
                 f'{cage.hint}', True, (255, 255, 255))
             WIN.blit(
-                hint_label, (cage.rect[0] + (SIDE_SIZE - hint_label.get_width())/2, cage.rect[1] + (SIDE_SIZE - hint_label.get_height())/2))
+                hint_label, (cage.rect[0] + (cage.side_size - hint_label.get_width())/2, cage.rect[1] + (cage.side_size - hint_label.get_height())/2))
