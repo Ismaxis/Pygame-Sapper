@@ -3,6 +3,7 @@ import pygame as pg
 
 class Menu_view:
     def update(self, win, menu):
+        win.fill((0, 0, 0))
         self.draw_banner(win, menu.name_banner)
         self.draw_button(win, menu.start_button)
 
@@ -28,6 +29,8 @@ class Menu_view:
 
 class Field_view:
     def update(self, win, win_size, field):
+        win.fill((0, 0, 0))
+
         # draw rects
         for line in field.field:
             for cage in line:
@@ -36,11 +39,9 @@ class Field_view:
         # draw lines
         for i in range(field.grid_size):
             pg.draw.line(win, (255, 255, 255),
-                         (0, i * field.side_size), (win_size[1], i * field.side_size), 3)
+                         (0, i * field.side_size), (win_size[1] - 3, i * field.side_size), 3)
             pg.draw.line(win, (255, 255, 255),
                          (i * field.side_size, 0), (i * field.side_size, win_size[1]), 3)
-
-        pg.display.update()
 
     @staticmethod
     def draw_cage(win, cage):
@@ -48,6 +49,9 @@ class Field_view:
         if cage.defused:
             if cage.opened and cage.is_mine:
                 color = (200, 50, 50)
+                pg.draw.rect(win, color, cage.rect)
+            else:
+                color = cage.close_color
                 pg.draw.rect(win, color, cage.rect)
             win.blit(cage.flag, (cage.rect[0], cage.rect[1]))
             return
@@ -67,3 +71,15 @@ class Field_view:
                 f'{cage.hint}', True, (255, 255, 255))
             win.blit(
                 hint_label, (cage.rect[0] + (cage.side_size - hint_label.get_width())/2, cage.rect[1] + (cage.side_size - hint_label.get_height())/2))
+
+
+class Panel_view:
+    def update(self, win, win_size, panel):
+        pg.draw.rect(win, (0, 0, 0), panel.get_rect(win_size))
+
+        banner_pos = panel.banner_pos(win_size)
+        self.draw_banner(win, panel.defuse_banner.label, banner_pos)
+
+    @staticmethod
+    def draw_banner(win, label, pos):
+        win.blit(label, pos)

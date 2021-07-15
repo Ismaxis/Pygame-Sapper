@@ -1,6 +1,7 @@
 import pygame as pg
 import os
 import random
+from visual_components import Button, Banner
 from fill import fill
 pg.font.init()
 
@@ -98,6 +99,26 @@ class Mine_field:
                 self.field[x][y].update(False, False)
 
 
+class Panel:
+    def __init__(self, panel_size, defuse_amount):
+        self.panel_size = panel_size
+        self.total_def_amount = defuse_amount
+        banner_pos = (panel_size[0]/2, panel_size[1]/5)
+        self.text_size = 25
+        self.defuse_banner = Banner(banner_pos, f"Defuses remain: {defuse_amount}",
+                                    (255, 255, 255), self.text_size)
+
+    def update(self, defuse_amount):
+        self.defuse_banner.update(
+            f"Defuses remain: {self.total_def_amount - defuse_amount}")
+
+    def get_rect(self, win_size):
+        return (win_size[0], 0, self.panel_size[0], self.panel_size[1])
+
+    def banner_pos(self, win_size):
+        return win_size[1] + self.defuse_banner.pos[0], self.defuse_banner.pos[1]
+
+
 class Game:
     def __init__(self, difficult, win_size):
         mines_amount = difficult * 5
@@ -110,12 +131,17 @@ class Game:
 
         self.mine_field = Mine_field(
             mines_amount, self.grid_size, self.side_size)
+        panel_size = (win_size[0] - win_size[1], win_size[1])
+        self.panel = Panel(panel_size, mines_amount)
+
         self.victory_label = None
 
         self.result = 0
 
     def update(self, x, y, button):
         self.mine_field.update(x, y, button)
+        self.panel.update(self.mine_field.defuse_amount)
+
         if button == 1:
             self.defeat_check(x, y)
         elif button == 3:

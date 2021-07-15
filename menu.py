@@ -1,30 +1,5 @@
 import pygame as pg
-
-
-class Button:
-    def __init__(self, pos, size, text, color):
-        self.pos = pos
-        self.size = size
-        self.font = pg.font.SysFont("comics", 50)
-        self.label = self.font.render(text, True, (0, 0, 0))
-        self.color = color
-        self.status = False
-        self.selected = False
-
-        self.rect = (pos[0] - self.size[0]/2, pos[1] - self.size[1]/2,
-                     self.size[0], self.size[1])
-
-        self.label_pos = (pos[0] - self.label.get_width()/2,
-                          pos[1] - self.label.get_height()/2)
-
-
-class Banner:
-    def __init__(self, pos, text, color):
-        self.font = pg.font.SysFont("arial", 100)
-        self.label = self.font.render(text, True, color)
-
-        self.pos = (pos[0] - self.label.get_width()/2,
-                    pos[1] + self.label.get_height()/2)
+from visual_components import Button, Banner
 
 
 class Start_menu:
@@ -51,7 +26,7 @@ class Start_menu:
         high_dif_pos = (win_size[0]/2 + dif_size[0] + gap, win_size[1] * 11/14)
 
         # Components
-        self.name_banner = Banner(banner_pos, banner_text, banner_color)
+        self.name_banner = Banner(banner_pos, banner_text, banner_color, 100)
 
         self.start_button = Button(button_pos, button_size,
                                    button_text, button_color)
