@@ -70,22 +70,16 @@ def launch_game(difficult):
 
             mouse_pos = pg.mouse.get_pos()
             if mouse_pos[0] < WIN_SIZE[1] and event.type == pg.MOUSEBUTTONDOWN:
-                if event.button == 1:
-                    x = int(mouse_pos[0]//sapper_game.side_size)
-                    y = int(mouse_pos[1]//sapper_game.side_size)
+                x = int(mouse_pos[0]//sapper_game.side_size)
+                y = int(mouse_pos[1]//sapper_game.side_size)
 
-                    sapper_game.update(x, y, event.button)
-
-                elif event.button == 3:
-                    x = int(mouse_pos[0]//sapper_game.side_size)
-                    y = int(mouse_pos[1]//sapper_game.side_size)
-
-                    sapper_game.update(x, y, event.button)
+                sapper_game.update(x, y, event.button)
 
         if sapper_game.result != 0:
             game_view.update(WIN, WIN_SIZE, sapper_game.mine_field)
-            WIN.blit(sapper_game.victory_label, ((WIN_SIZE[0] - sapper_game.victory_label.get_width())/2,
-                                                 (WIN_SIZE[1] - sapper_game.victory_label.get_height())/2))
+            sapper_game.panel.update(
+                sapper_game.mine_field.defuse_amount, sapper_game.result)
+            panel_view.update(WIN, WIN_SIZE, sapper_game.panel)
 
             pg.display.update()
 

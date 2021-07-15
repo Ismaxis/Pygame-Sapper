@@ -103,12 +103,24 @@ class Panel:
     def __init__(self, panel_size, defuse_amount):
         self.panel_size = panel_size
         self.total_def_amount = defuse_amount
+
+        self.end_banner_pos = (panel_size[0]/2, panel_size[1]/2)
         banner_pos = (panel_size[0]/2, panel_size[1]/5)
+
         self.text_size = 25
         self.defuse_banner = Banner(banner_pos, f"Defuses remain: {defuse_amount}",
                                     (255, 255, 255), self.text_size)
 
-    def update(self, defuse_amount):
+        self.victory_label = None
+
+    def update(self, defuse_amount, result):
+        if result == 1:
+            self.victory_label = pg.font.SysFont(
+                "consolas", 50).render("Win!", True, (40, 255, 80))
+        elif result == -1:
+            self.victory_label = pg.font.SysFont(
+                "consolas", 50).render("Defeat!", True, (255, 40, 80))
+
         self.defuse_banner.update(
             f"Defuses remain: {self.total_def_amount - defuse_amount}")
 
@@ -134,13 +146,11 @@ class Game:
         panel_size = (win_size[0] - win_size[1], win_size[1])
         self.panel = Panel(panel_size, mines_amount)
 
-        self.victory_label = None
-
         self.result = 0
 
     def update(self, x, y, button):
         self.mine_field.update(x, y, button)
-        self.panel.update(self.mine_field.defuse_amount)
+        self.panel.update(self.mine_field.defuse_amount, self.result)
 
         if button == 1:
             self.defeat_check(x, y)
@@ -150,9 +160,6 @@ class Game:
     def defeat_check(self, x, y):
         if self.mine_field.field[x][y].is_mine and not self.mine_field.field[x][y].defused:
             self.result = -1
-
-            self.victory_label = pg.font.SysFont(
-                "consolas", 200).render("Defeat!", True, (255, 40, 80))
 
             for line in self.mine_field.field:
                 for cage in line:
@@ -165,9 +172,6 @@ class Game:
                     return
 
         self.result = 1
-
-        self.victory_label = pg.font.SysFont(
-            "consolas", 200).render("Win!", True, (40, 255, 80))
 
         for line in self.mine_field.field:
             for cage in line:

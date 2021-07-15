@@ -80,6 +80,10 @@ class Panel_view:
         banner_pos = panel.banner_pos(win_size)
         self.draw_banner(win, panel.defuse_banner.label, banner_pos)
 
+        if panel.victory_label != None:
+            win.blit(panel.victory_label, (win_size[1] + panel.end_banner_pos[0] - panel.victory_label.get_width()/2,
+                                           (win_size[1] - panel.victory_label.get_height())/2))
+
     @staticmethod
     def draw_banner(win, label, pos):
         win.blit(label, pos)
