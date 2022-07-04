@@ -7,7 +7,7 @@ pg.font.init()
 
 
 class Cage:
-    hint_font = pg.font.SysFont("consolas", 25)
+    hint_font = pg.font.SysFont("consolas", 15)
 
     close_color = (128, 128, 128)
     open_color = (200, 200, 200)
@@ -107,7 +107,7 @@ class Panel:
         self.end_banner_pos = (panel_size[0]/2, panel_size[1]/2)
         banner_pos = (panel_size[0]/2, panel_size[1]/5)
 
-        self.text_size = 25
+        self.text_size = 15
         self.defuse_banner = Banner(banner_pos, f"Defuses remain: {defuse_amount}",
                                     (255, 255, 255), self.text_size)
 

@@ -5,7 +5,7 @@ class Button:
     def __init__(self, pos, size, text, color):
         self.pos = pos
         self.size = size
-        self.font = pg.font.SysFont("comics", 50)
+        self.font = pg.font.SysFont("JetBrains Mono", 25)
         self.label = self.font.render(text, True, (0, 0, 0))
         self.color = color
         self.status = False
@@ -21,7 +21,7 @@ class Button:
 class Banner:
     def __init__(self, pos, text, color, size):
         self.color = color
-        self.font = pg.font.SysFont("arial", size)
+        self.font = pg.font.SysFont("JetBrains Mono", size)
         self.label = self.font.render(text, True, color)
 
         self.pos = (pos[0] - self.label.get_width()/2,

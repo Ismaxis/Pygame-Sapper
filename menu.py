@@ -4,6 +4,7 @@ from visual_components import Button, Banner
 
 class Start_menu:
     def __init__(self, win_size):
+        # Banner
         banner_pos = (win_size[0]/2, win_size[1]/14)
         banner_color = (255, 255, 255)
         banner_text = "Sapper game"
@@ -38,9 +39,6 @@ class Start_menu:
         self.high_dif_button = Button(
             high_dif_pos, dif_size, "Hard", high_dif_color)
 
-    def change_status(self, button, status):
-        button.status = status
-
     def select(self, cur_button):
         for button in self.buttons():
             button.selected = False
@@ -49,3 +47,7 @@ class Start_menu:
     def buttons(self):
         return (self.start_button, self.low_dif_button,
                 self.med_dif_button, self.high_dif_button)
+
+    @staticmethod
+    def change_status(button, status):
+        button.status = status

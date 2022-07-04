@@ -75,6 +75,7 @@ def launch_game(difficult):
 
                 sapper_game.update(x, y, event.button)
 
+        # Win
         if sapper_game.result != 0:
             game_view.update(WIN, WIN_SIZE, sapper_game.mine_field)
             sapper_game.panel.update(
